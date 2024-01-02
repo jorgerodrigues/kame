@@ -1,4 +1,4 @@
-# Project upkame
+# UpKame - the simple monitoring tool.
 
 UpKame is the simplest uptime monitoring tool around. It does all that you need and nothing that you dont'.  
 This repo hosts the backend api server..
