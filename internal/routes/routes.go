@@ -22,6 +22,9 @@ func RegisterRoutes(d database.Service) http.Handler {
 	r.HandlerFunc(http.MethodGet, "/", h.HelloWorldHandler)
 	r.HandlerFunc(http.MethodGet, "/health", h.healthHandler)
 
+  // users
+  r.HandlerFunc(http.MethodPost, "/api/v1/users", h.CreateUserHandler)
+
 	return r
 }
 
