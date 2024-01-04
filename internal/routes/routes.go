@@ -5,25 +5,25 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/jorgerodrigues/upkame/internal/database"
+	"github.com/jorgerodrigues/upkame/internal/models"
 	"github.com/julienschmidt/httprouter"
 )
 
 type Routes struct {
-	db database.Service
+	models *models.Model
 }
 
-func RegisterRoutes(d database.Service) http.Handler {
+func RegisterRoutes(m *models.Model) http.Handler {
 	r := httprouter.New()
 	h := &Routes{
-		db: database.New(),
+		models: m,
 	}
 
 	r.HandlerFunc(http.MethodGet, "/", h.HelloWorldHandler)
 	r.HandlerFunc(http.MethodGet, "/health", h.healthHandler)
 
-  // users
-  r.HandlerFunc(http.MethodPost, "/api/v1/users", h.CreateUserHandler)
+	// users
+	r.HandlerFunc(http.MethodPost, "/api/v1/users", h.CreateUserHandler)
 
 	return r
 }
@@ -41,11 +41,11 @@ func (h *Routes) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Routes) healthHandler(w http.ResponseWriter, r *http.Request) {
-	jsonResp, err := json.Marshal(h.db.Health())
+	//	jsonResp, err := json.Marshal(database.Health(h.db))
+	//
+	//	if err != nil {
+	//		log.Fatalf("error handling JSON marshal. Err: %v", err)
+	//	}
 
-	if err != nil {
-		log.Fatalf("error handling JSON marshal. Err: %v", err)
-	}
-
-	_, _ = w.Write(jsonResp)
+	_, _ = w.Write([]byte("It's healthy, baby!"))
 }

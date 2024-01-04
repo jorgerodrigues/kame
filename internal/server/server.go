@@ -10,24 +10,26 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/jorgerodrigues/upkame/internal/database"
 	"github.com/jorgerodrigues/upkame/internal/routes"
+	"github.com/jorgerodrigues/upkame/internal/models"
 )
 
 type Server struct {
 	port int
-	db   database.Service
+  models *models.Model
 }
 
 func NewServer() *http.Server {
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
+  db := database.New()
 	NewServer := &Server{
 		port: port,
-		db:   database.New(),
+    models: models.New(db),
 	}
 
 	// Declare Server config
 	server := &http.Server{
 		Addr:         fmt.Sprintf(":%d", NewServer.port),
-		Handler:      routes.RegisterRoutes(NewServer.db),
+		Handler:      routes.RegisterRoutes(NewServer.models),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
