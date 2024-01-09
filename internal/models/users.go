@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -18,7 +19,7 @@ type User struct {
 }
 
 type UserModel struct {
-	DB *sql.DB
+	DB *pgxpool.Pool
 }
 
 type password struct {
@@ -52,7 +53,7 @@ func (m *UserModel) FindById(id string) *User {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	row := m.DB.QueryRowContext(ctx, query, id)
+	row := m.DB.QueryRow(ctx, query, id)
 	user := &User{}
 	row.Scan(&user.ID, &user.Firstname, &user.Lastname, &user.Email, &user.Password, &user.CreatedAt)
 
@@ -67,7 +68,7 @@ func (m *UserModel) FindByEmail(email string) (*User, error) {
 
 	// ok to queryRowContext here since the email has a unique constraint
 	var user User
-	err := m.DB.QueryRowContext(ctx, query, email).Scan(&user.ID, &user.Firstname, &user.Lastname, &user.Email, &user.Password, &user.CreatedAt)
+	err := m.DB.QueryRow(ctx, query, email).Scan(&user.ID, &user.Firstname, &user.Lastname, &user.Email, &user.Password, &user.CreatedAt)
 
 	if err != nil {
 		return nil, err
@@ -87,7 +88,7 @@ func (m *UserModel) CreateUser(email, firstname, lastname, plainTextPW string) e
 	}
 	p.Hash(plainTextPW)
 
-	_, err := m.DB.ExecContext(ctx, query, firstname, lastname, email, p.hash)
+	_, err := m.DB.Exec(ctx, query, firstname, lastname, email, p.hash)
 	if err != nil {
 		// add checks for duplicate email in order to provide better errors
 		return err
