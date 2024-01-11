@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/jorgerodrigues/upkame/internal/validator"
+	"github.com/julienschmidt/httprouter"
 )
 
 type LoginRequestBody struct {
@@ -14,7 +15,7 @@ type LoginRequestBody struct {
 	Lastname  string `json:"lastname"`
 }
 
-func (h *Routes) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
+func (h *Routes) CreateUserHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	var body LoginRequestBody
 	// handling if the request is sent as JSON
 	_ = json.NewDecoder(r.Body).Decode(&body)

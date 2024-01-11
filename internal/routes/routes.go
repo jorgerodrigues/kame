@@ -11,6 +11,7 @@ import (
 
 type Routes struct {
 	models *models.Model
+	urls   *models.URLModel
 }
 
 func RegisterRoutes(m *models.Model) http.Handler {
@@ -23,7 +24,13 @@ func RegisterRoutes(m *models.Model) http.Handler {
 	r.HandlerFunc(http.MethodGet, "/health", h.healthHandler)
 
 	// users
-	r.HandlerFunc(http.MethodPost, "/api/v1/users", h.CreateUserHandler)
+	r.POST("/api/v1/users", h.CreateUserHandler)
+
+	// urls
+	r.POST("/api/v1/urls", h.createURLHandler)
+  r.GET("/api/v1/urls/:id", h.getURLHandler)
+  r.DELETE("/api/v1/urls/:id", h.deleteURLHandler)
+  r.PATCH("/api/v1/urls/:id", h.updateURLHandler)
 
 	return r
 }
