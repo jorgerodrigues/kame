@@ -34,6 +34,32 @@ func (m *URLModel) Create(url string, name string, ownerId, createdById string) 
 	return nil
 }
 
+func (m *URLModel) Delete(id string) error {
+  query := `DELETE FROM urls WHERE id = $1`
+  ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+  defer cancel()
+
+  _, err := m.DB.Exec(ctx, query, id)
+
+  if err != nil {
+    return err
+  }
+  return nil
+}
+
+func (m *URLModel) Update(id string, url string, name string) error {
+  query := `UPDATE urls SET url = $1, name = $2 WHERE id = $3`
+  ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+  defer cancel()
+
+  _, err := m.DB.Exec(ctx, query, url, name, id)
+
+  if err != nil {
+    return err
+  }
+  return nil
+}
+
 func (m *URLModel) GetById(id string) (*URL, error) {
 	query := `SELECT id, url, name, owner_id, created_by_id FROM urls WHERE id = $1`
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
