@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"log/slog"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -19,7 +20,8 @@ type URL struct {
 }
 
 type URLModel struct {
-	DB *pgxpool.Pool
+	DB     *pgxpool.Pool
+	logger *slog.Logger
 }
 
 func (m *URLModel) Create(url string, name string, ownerId, createdById string) error {

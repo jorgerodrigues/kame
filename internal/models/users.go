@@ -3,6 +3,7 @@ package models
 import (
 	"context"
 	"database/sql"
+	"log/slog"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -19,7 +20,8 @@ type User struct {
 }
 
 type UserModel struct {
-	DB *pgxpool.Pool
+	DB     *pgxpool.Pool
+	logger *slog.Logger
 }
 
 type password struct {

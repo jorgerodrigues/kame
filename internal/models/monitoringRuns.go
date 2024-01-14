@@ -2,7 +2,7 @@ package models
 
 import (
 	"context"
-	"fmt"
+	"log/slog"
 	"net/http"
 	"sync"
 	"time"
@@ -16,16 +16,17 @@ type MonitoringRun struct {
 	Result       string `json:"result"`
 	StatusCode   int    `json:"status_code"`
 	ResponseTime int    `json:"response_time"`
-	CreatedAt    string `json:"created_at"`
-	UpdatedAt    string `json:"updated_at"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 type MonitoringRunModel struct {
 	DB *pgxpool.Pool
+  logger *slog.Logger
 }
 
 func (m *MonitoringRunModel) Create(urlId, result string, statusCode, responseTime int) (*MonitoringRun, error) {
-  println("Creating monitoring run", urlId, result, statusCode, responseTime)
+  m.logger.Info("Creating monitoring run", urlId, result)
 	query := `INSERT INTO monitoring_results (url_id, result, status_code, response_time) VALUES ($1, $2, $3, $4) RETURNING id, url_id, result, status_code, response_time, created_at, updated_at`
 
 	item := MonitoringRun{}
@@ -33,7 +34,7 @@ func (m *MonitoringRunModel) Create(urlId, result string, statusCode, responseTi
 	err := row.Scan(&item.Id, &item.UrlId, &item.Result, &item.StatusCode, &item.ResponseTime, &item.CreatedAt, &item.UpdatedAt)
 
 	if err != nil {
-    println("Error creating monitoring run", err.Error())
+    m.logger.Error("Error creating monitoring run", err)
 		return nil, err
 	}
 
@@ -94,7 +95,7 @@ func (m *MonitoringRunModel) MonitorURL(urlId, url string, wg *sync.WaitGroup) (
 	// Create a new GET request
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		fmt.Println("Error creating request:", err)
+    m.logger.Error("Error creating request", err.Error(), url )
 		return nil, err
 	}
 	start := time.Now()
@@ -102,7 +103,7 @@ func (m *MonitoringRunModel) MonitorURL(urlId, url string, wg *sync.WaitGroup) (
 	// Send the request
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("Error sending request:", err)
+    m.logger.Error("Error sending request", err.Error(), url )
 		return nil, err
 	}
 
@@ -111,10 +112,7 @@ func (m *MonitoringRunModel) MonitorURL(urlId, url string, wg *sync.WaitGroup) (
 
 	// get the elapsed time
 	elapsed := time.Since(start)
-	println("request completed URL: ", url)
-  println("status code: ", statusCode)
-  println("result: ", result)
-  println("elapsed time: ", elapsed.Milliseconds())
+  m.logger.Debug("Request completed", url, statusCode, result, elapsed.Milliseconds())
   println("=====================================")
 	run, err := m.Create(urlId, result, statusCode, int(elapsed.Milliseconds()))
 	if err != nil {
