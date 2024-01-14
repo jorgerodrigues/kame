@@ -5,8 +5,9 @@ import (
 )
 
 type Model struct {
-	User *UserModel
-	URLs *URLModel
+	User           *UserModel
+	URLs           *URLModel
+	MonitoringRuns *MonitoringRunModel
 }
 
 func New(db *pgxpool.Pool) *Model {
@@ -15,6 +16,9 @@ func New(db *pgxpool.Pool) *Model {
 			DB: db,
 		},
 		URLs: &URLModel{
+			DB: db,
+		},
+		MonitoringRuns: &MonitoringRunModel{
 			DB: db,
 		},
 	}

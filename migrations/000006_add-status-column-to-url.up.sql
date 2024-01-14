@@ -1,0 +1,2 @@
+ALTER TABLE urls 
+ADD COLUMN status VARCHAR(100) NOT NULL DEFAULT 'active';
