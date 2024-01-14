@@ -16,8 +16,8 @@ type MonitoringRun struct {
 	Result       string `json:"result"`
 	StatusCode   int    `json:"status_code"`
 	ResponseTime int    `json:"response_time"`
-	CreatedAt    string `json:"created_at"`
-	UpdatedAt    string `json:"updated_at"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 type MonitoringRunModel struct {
