@@ -10,9 +10,9 @@ import (
 )
 
 type Routes struct {
-	models *models.Model
-	urls   *models.URLModel
-  montioringRuns *models.MonitoringRunModel
+	models         *models.Model
+	urls           *models.URLModel
+	montioringRuns *models.MonitoringRunModel
 }
 
 func RegisterRoutes(m *models.Model) http.Handler {
@@ -29,15 +29,15 @@ func RegisterRoutes(m *models.Model) http.Handler {
 
 	// urls
 	r.POST("/api/v1/urls", h.createURLHandler)
-  r.GET("/api/v1/urls/:id", h.getURLHandler)
-  r.DELETE("/api/v1/urls/:id", h.deleteURLHandler)
-  r.PATCH("/api/v1/urls/:id", h.updateURLHandler)
+	r.GET("/api/v1/urls/:id", h.getURLHandler)
+	r.DELETE("/api/v1/urls/:id", h.deleteURLHandler)
+	r.PATCH("/api/v1/urls/:id", h.updateURLHandler)
 
-  // monitoring
+	// monitoring
 
-  r.POST("/api/v1/runAll", h.postRunAllMonitoringJobsHandler)
+	r.POST("/api/v1/runAll", h.postRunAllMonitoringJobsHandler)
 
-	return r
+	return h.enableCORS(r)
 }
 
 func (h *Routes) HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
