@@ -11,22 +11,22 @@ import (
 )
 
 type MonitoringRun struct {
-	Id           string `json:"id"`
-	UrlId        string `json:"url_id"`
-	Result       string `json:"result"`
-	StatusCode   int    `json:"status_code"`
-	ResponseTime int    `json:"response_time"`
+	Id           string    `json:"id"`
+	UrlId        string    `json:"url_id"`
+	Result       string    `json:"result"`
+	StatusCode   int       `json:"status_code"`
+	ResponseTime int       `json:"response_time"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 type MonitoringRunModel struct {
-	DB *pgxpool.Pool
-  logger *slog.Logger
+	DB     *pgxpool.Pool
+	logger *slog.Logger
 }
 
 func (m *MonitoringRunModel) Create(urlId, result string, statusCode, responseTime int) (*MonitoringRun, error) {
-  m.logger.Info("Creating monitoring run", urlId, result)
+	m.logger.Info("Creating monitoring run", urlId, result)
 	query := `INSERT INTO monitoring_results (url_id, result, status_code, response_time) VALUES ($1, $2, $3, $4) RETURNING id, url_id, result, status_code, response_time, created_at, updated_at`
 
 	item := MonitoringRun{}
@@ -34,7 +34,7 @@ func (m *MonitoringRunModel) Create(urlId, result string, statusCode, responseTi
 	err := row.Scan(&item.Id, &item.UrlId, &item.Result, &item.StatusCode, &item.ResponseTime, &item.CreatedAt, &item.UpdatedAt)
 
 	if err != nil {
-    m.logger.Error("Error creating monitoring run", err)
+		m.logger.Error("Error creating monitoring run", err)
 		return nil, err
 	}
 
@@ -57,11 +57,11 @@ func (m *MonitoringRunModel) RunAll() error {
 
 	query := `SELECT id, url, status, created_at, updated_at FROM urls WHERE status = 'active'`
 	rows, err := m.DB.Query(context.Background(), query)
-  if err != nil {
-    return err
-  }
+	if err != nil {
+		return err
+	}
 
-  println("Running all monitoring jobs")
+	println("Running all monitoring jobs")
 	var urlsToMonitor []URL
 	for rows.Next() {
 		item := URL{}
@@ -91,11 +91,10 @@ func (m *MonitoringRunModel) MonitorURL(urlId, url string, wg *sync.WaitGroup) (
 
 	defer wg.Done()
 	client := &http.Client{}
-	println("Fetching URL: ", url)
 	// Create a new GET request
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-    m.logger.Error("Error creating request", err.Error(), url )
+		m.logger.Error("Error creating request", err.Error(), url)
 		return nil, err
 	}
 	start := time.Now()
@@ -103,7 +102,8 @@ func (m *MonitoringRunModel) MonitorURL(urlId, url string, wg *sync.WaitGroup) (
 	// Send the request
 	resp, err := client.Do(req)
 	if err != nil {
-    m.logger.Error("Error sending request", err.Error(), url )
+		m.logger.Error("Error sending request", err.Error(), url)
+		m.Create(urlId, "500 Internal Server Error", 500, 2000)
 		return nil, err
 	}
 
@@ -112,8 +112,8 @@ func (m *MonitoringRunModel) MonitorURL(urlId, url string, wg *sync.WaitGroup) (
 
 	// get the elapsed time
 	elapsed := time.Since(start)
-  m.logger.Debug("Request completed", url, statusCode, result, elapsed.Milliseconds())
-  println("=====================================")
+	m.logger.Debug("Request completed", url, statusCode, result, elapsed.Milliseconds())
+	println("=====================================")
 	run, err := m.Create(urlId, result, statusCode, int(elapsed.Milliseconds()))
 	if err != nil {
 		return nil, err
