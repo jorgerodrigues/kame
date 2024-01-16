@@ -90,7 +90,9 @@ func (m *MonitoringRunModel) RunAll() error {
 func (m *MonitoringRunModel) MonitorURL(urlId, url string, wg *sync.WaitGroup) (*MonitoringRun, error) {
 
 	defer wg.Done()
-	client := &http.Client{}
+	client := &http.Client{
+		Timeout: 4 * time.Second,
+	}
 	// Create a new GET request
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

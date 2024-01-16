@@ -12,7 +12,6 @@ import (
 	"time"
 
 	_ "github.com/joho/godotenv/autoload"
-	"github.com/jorgerodrigues/upkame/internal/database"
 	"github.com/jorgerodrigues/upkame/internal/logger"
 	"github.com/jorgerodrigues/upkame/internal/models"
 	"github.com/jorgerodrigues/upkame/internal/routes"
@@ -23,14 +22,12 @@ type Server struct {
 	models *models.Model
 }
 
-func NewServer() *http.Server {
+func NewServer(m *models.Model) *http.Server {
 	port, _ := strconv.Atoi(os.Getenv("PORT"))
-	db := database.New()
-	logger := logger.NewLogger()
 
 	NewServer := &Server{
 		port:   port,
-		models: models.New(db, logger),
+		models: m,
 	}
 
 	// Declare Server config
@@ -45,10 +42,10 @@ func NewServer() *http.Server {
 	return server
 }
 
-func StartServer() {
+func StartServer(m *models.Model) {
 	logger := logger.NewLogger()
 	// Create a new server
-	server := NewServer()
+	server := NewServer(m)
 
 	// Use a WaitGroup to wait for the server to start
 
