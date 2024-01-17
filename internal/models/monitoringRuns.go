@@ -121,5 +121,26 @@ func (m *MonitoringRunModel) MonitorURL(urlId, url string, wg *sync.WaitGroup) (
 		return nil, err
 	}
 	return run, nil
+}
 
+func (m *MonitoringRunModel) GetRunsForPeriod(urlId string, from, to time.Time) ([]MonitoringRun, error) {
+
+	runs := []MonitoringRun{}
+	query := `SELECT * FROM monitoring_results WHERE created_at BETWEEN $1 AND $2 AND url_id=$3`
+	rows, err := m.DB.Query(context.Background(), query, from, to, urlId)
+	if err != nil {
+		m.logger.Error("Error getting monitoring runs", err)
+		return nil, err
+	}
+
+	for rows.Next() {
+		item := MonitoringRun{}
+		err = rows.Scan(&item.Id, &item.UrlId, &item.Result, &item.StatusCode, &item.ResponseTime, &item.CreatedAt, &item.UpdatedAt)
+		if err != nil {
+			m.logger.Error("Error getting monitoring runs", err)
+			return nil, err
+		}
+		runs = append(runs, item)
+	}
+	return runs, nil
 }
