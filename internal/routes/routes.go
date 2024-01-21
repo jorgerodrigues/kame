@@ -34,8 +34,10 @@ func RegisterRoutes(m *models.Model) http.Handler {
 	r.PATCH("/api/v1/urls/:id", h.updateURLHandler)
 
 	// monitoring
-
 	r.POST("/api/v1/runAll", h.postRunAllMonitoringJobsHandler)
+
+  // monitoring_stats
+  r.GET("/api/v1/monitoring_stats/latest_stats", h.getLatestStatsHandler)
 
 	return h.enableCORS(r)
 }
