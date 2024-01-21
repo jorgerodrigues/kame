@@ -46,7 +46,7 @@ func (h *Routes) getLatestStatsHandler(w http.ResponseWriter, r *http.Request, _
 		}
 	}
 
-  var resultingStats []MonitoringStats
+	var resultingStats []MonitoringStats
 
 	for _, value := range days {
 		var stats MonitoringStats
@@ -73,7 +73,7 @@ func (h *Routes) getLatestStatsHandler(w http.ResponseWriter, r *http.Request, _
 		stats.UrlId = url
 		stats.StartDate = today
 		stats.EndDate = threeDaysAgo
-    resultingStats = append(resultingStats, stats)
+		resultingStats = append(resultingStats, stats)
 	}
 
 	jsonResp, err := json.Marshal(resultingStats)
@@ -81,6 +81,8 @@ func (h *Routes) getLatestStatsHandler(w http.ResponseWriter, r *http.Request, _
 		http.Error(w, "Error marshalling json", http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	w.Write(jsonResp)
 
 }
