@@ -39,6 +39,10 @@ func RegisterRoutes(m *models.Model) http.Handler {
   // monitoring_stats
   r.GET("/api/v1/monitoring_stats/latest_stats", h.getLatestStatsHandler)
 
+  // tokens
+  r.POST("/api/v1/tokens", h.createTokenHandler)
+  r.POST("/api/v1/tokens/validate", h.validateTokenHandler)
+
 	return h.enableCORS(r)
 }
 

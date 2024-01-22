@@ -61,7 +61,6 @@ func (m *MonitoringRunModel) RunAll() error {
 		return err
 	}
 
-	println("Running all monitoring jobs")
 	var urlsToMonitor []URL
 	for rows.Next() {
 		item := URL{}
@@ -115,7 +114,6 @@ func (m *MonitoringRunModel) MonitorURL(urlId, url string, wg *sync.WaitGroup) (
 	// get the elapsed time
 	elapsed := time.Since(start)
 	m.logger.Debug("Request completed", url, statusCode, result, elapsed.Milliseconds())
-	println("=====================================")
 	run, err := m.Create(urlId, result, statusCode, int(elapsed.Milliseconds()))
 	if err != nil {
 		return nil, err
