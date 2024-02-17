@@ -26,6 +26,9 @@ func RegisterRoutes(m *models.Model) http.Handler {
 
 	// users
 	r.POST("/api/v1/users", h.CreateUserHandler)
+  // r.GET("/api/v1/users/:id", h.GetUserHandler)
+  // r.DELETE("/api/v1/users/:id", h.DeleteUserHandler)
+  // r.PATCH("/api/v1/users/:id", h.UpdateUserHandler)
 
 	// urls
 	r.POST("/api/v1/urls", h.createURLHandler)

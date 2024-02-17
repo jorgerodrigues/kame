@@ -56,3 +56,13 @@ clean up binary from the last build
 ```bash
 make clean
 ```
+
+## Database migrations
+
+### how to generate a new migration
+
+`migrate create -dir ./migrations -seq -ext .sql name-of-the-migration`
+
+### How to apply a migration
+
+`migrate -path=./migrations -database="postgres://kame:password1234@localhost:5432/upkame?sslmode=disable" up`
