@@ -8,7 +8,6 @@ import (
 )
 
 func (h *Routes) getOrganizationByIdHandler(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-	//get id parameter
 	id := p.ByName("id")
 
 	if id == "" {

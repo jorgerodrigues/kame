@@ -33,6 +33,7 @@ func RegisterRoutes(m *models.Model) http.Handler {
 	//organizations
 	r.POST("/api/v1/organizations", h.createOrganizationHandler)
 	r.GET("/api/v1/organizations/:id", h.getOrganizationByIdHandler)
+	r.POST("/api/v1/organizations/:id/users", h.addUserToOrganizationHandler)
 
 	// urls
 	r.POST("/api/v1/urls", h.createURLHandler)

@@ -18,6 +18,7 @@ type LoginRequestBody struct {
 func (h *Routes) createUserHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	var body LoginRequestBody
 	_ = json.NewDecoder(r.Body).Decode(&body)
+	defer r.Body.Close()
 
 	// handling if the request is sent as form data
 	if body.Email == "" || body.Password == "" {

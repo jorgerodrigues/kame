@@ -19,19 +19,22 @@ type OrganizationModel struct {
 	logger *slog.Logger
 }
 
-func (m *OrganizationModel) Create(name string) error {
-	insertOrganization := `INSERT INTO organizations (name) VALUES ($1) RETURNING id`
+func (m *OrganizationModel) Create(name string) (*Organization, error) {
+	insertOrganization := `INSERT INTO organizations (name) VALUES ($1) RETURNING id, name, created_at`
+	org := &Organization{}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	_, err := m.DB.Exec(ctx, insertOrganization, name)
+	row := m.DB.QueryRow(ctx, insertOrganization, name)
+	err := row.Scan(&org.ID, &org.Name, &org.CreateAt)
+
 	if err != nil {
 		m.logger.Error("Error inserting organization", err)
-		return err
+		return nil, err
 	}
 
-	return nil
+	return org, nil
 }
 
 func (m *OrganizationModel) FindByName(name string) (*Organization, error) {
@@ -79,4 +82,19 @@ func (m *OrganizationModel) FindById(id string) (*Organization, error) {
 	}
 
 	return org, nil
+}
+
+func (m *OrganizationModel) AddUserToOrganization(userID, orgID, role string) error {
+	insertUserOnOrganization := `INSERT INTO users_on_organizations (user_id, organization_id, role) VALUES ($1, $2, $3)`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	_, err := m.DB.Exec(ctx, insertUserOnOrganization, userID, orgID, role)
+	if err != nil {
+		m.logger.Error("Error inserting user on organization", err)
+		return err
+	}
+
+	return nil
 }
