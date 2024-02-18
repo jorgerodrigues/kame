@@ -57,7 +57,7 @@ func (t *TokenModel) Get(token string) string {
 	return ""
 }
 
-func (t *TokenModel) deleteToken(tokenId string) error {
+func (t *TokenModel) DeleteToken(tokenId string) error {
 	query := "DELETE FROM tokens WHERE id = $1"
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
