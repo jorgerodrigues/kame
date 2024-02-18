@@ -35,7 +35,7 @@ func (m *OrganizationModel) Create(name string) error {
 }
 
 func (m *OrganizationModel) FindByName(name string) (*Organization, error) {
-	checkOrgExists := `SELECT id FROM organizations WHERE name = $1`
+	checkOrgExists := `SELECT id, name, created_at FROM organizations WHERE name = $1`
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
@@ -43,7 +43,7 @@ func (m *OrganizationModel) FindByName(name string) (*Organization, error) {
 	row := m.DB.QueryRow(ctx, checkOrgExists, name)
 	org := &Organization{}
 
-	err := row.Scan(&org.ID)
+	err := row.Scan(&org.ID, &org.Name, &org.CreateAt)
 
 	if err != nil && err.Error() == "no rows in result set" {
 		return nil, nil
@@ -56,4 +56,27 @@ func (m *OrganizationModel) FindByName(name string) (*Organization, error) {
 
 	return org, nil
 
+}
+
+func (m *OrganizationModel) FindById(id string) (*Organization, error) {
+	checkOrgExists := `SELECT id, name, created_at FROM organizations WHERE id = $1`
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	row := m.DB.QueryRow(ctx, checkOrgExists, id)
+	org := &Organization{}
+
+	err := row.Scan(&org.ID, &org.Name, &org.CreateAt)
+
+	if err != nil && err.Error() == "no rows in result set" {
+		return nil, nil
+	}
+
+	if err != nil && err.Error() != "no rows in result set" {
+		m.logger.Error("Error scanning row", err)
+		return nil, err
+	}
+
+	return org, nil
 }

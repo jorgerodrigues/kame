@@ -62,8 +62,18 @@ func (h *Routes) createOrganizationHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	createdOrg, err := h.models.Organizations.FindByName(body.Name)
+
+	if err != nil {
+		utils.SendJSONResponse(w, http.StatusInternalServerError, utils.ResponsePayload{
+			Message: "Error finding organization",
+			Data:    nil,
+		})
+		return
+	}
+
 	utils.SendJSONResponse(w, http.StatusCreated, utils.ResponsePayload{
 		Message: "Organization created",
-		Data:    nil,
+		Data:    createdOrg,
 	})
 }
