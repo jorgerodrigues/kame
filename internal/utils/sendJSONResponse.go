@@ -9,7 +9,6 @@ import (
 
 // ResponsePayload is a generic structure for API responses
 type ResponsePayload struct {
-	Success bool        `json:"success"`
 	Message string      `json:"message,omitempty"`
 	Data    interface{} `json:"data,omitempty"`
 }
