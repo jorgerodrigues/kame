@@ -25,7 +25,15 @@ func RegisterRoutes(m *models.Model) http.Handler {
 	r.HandlerFunc(http.MethodGet, "/health", h.healthHandler)
 
 	// users
-	r.POST("/api/v1/users", h.CreateUserHandler)
+	r.POST("/api/v1/users", h.createUserHandler)
+	// r.GET("/api/v1/users/:id", h.GetUserHandler)
+	// r.DELETE("/api/v1/users/:id", h.DeleteUserHandler)
+	// r.PATCH("/api/v1/users/:id", h.UpdateUserHandler)
+
+	//organizations
+	r.POST("/api/v1/organizations", h.createOrganizationHandler)
+	r.GET("/api/v1/organizations/:id", h.getOrganizationByIdHandler)
+	r.POST("/api/v1/organizations/:id/users", h.addUserToOrganizationHandler)
 
 	// urls
 	r.POST("/api/v1/urls", h.createURLHandler)
@@ -36,12 +44,12 @@ func RegisterRoutes(m *models.Model) http.Handler {
 	// monitoring
 	r.POST("/api/v1/runAll", h.postRunAllMonitoringJobsHandler)
 
-  // monitoring_stats
-  r.GET("/api/v1/monitoring_stats/latest_stats", h.getLatestStatsHandler)
+	// monitoring_stats
+	r.GET("/api/v1/monitoring_stats/latest_stats", h.getLatestStatsHandler)
 
-  // tokens
-  r.POST("/api/v1/tokens", h.createTokenHandler)
-  r.POST("/api/v1/tokens/validate", h.validateTokenHandler)
+	// tokens
+	r.POST("/api/v1/tokens", h.createTokenHandler)
+	r.POST("/api/v1/tokens/validate", h.validateTokenHandler)
 
 	return h.enableCORS(r)
 }

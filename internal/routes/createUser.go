@@ -15,18 +15,18 @@ type LoginRequestBody struct {
 	Lastname  string `json:"lastname"`
 }
 
-func (h *Routes) CreateUserHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (h *Routes) createUserHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	var body LoginRequestBody
-	// handling if the request is sent as JSON
 	_ = json.NewDecoder(r.Body).Decode(&body)
+	defer r.Body.Close()
 
 	// handling if the request is sent as form data
 	if body.Email == "" || body.Password == "" {
 		body.Email = r.FormValue("user")
 		body.Password = r.FormValue("password")
 		if body.Email == "" || body.Password == "" {
-			w.Write([]byte("User and Password are required"))
 			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("User and Password are required"))
 			return
 		}
 	}
